@@ -1,0 +1,14 @@
+services:
+  db-test:
+    image: pgvector/pgvector:0.8.2-pg17
+    environment:
+      POSTGRES_DB: rag_test
+      POSTGRES_USER: rag
+      POSTGRES_PASSWORD: rag_local_demo
+    ports: ['127.0.0.1:55432:5432']
+    tmpfs: [/var/lib/postgresql/data]
+    healthcheck:
+      test: [CMD-SHELL, 'pg_isready -U rag -d rag_test']
+      interval: 2s
+      timeout: 3s
+      retries: 20

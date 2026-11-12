@@ -1,0 +1,17 @@
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+.env
+data/
+models/
+*.log
+*.egg-info/
+dist/
+build/
+.agents/
+.claude/
+.mcp.json

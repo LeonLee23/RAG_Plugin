@@ -1,0 +1,754 @@
+[
+  {
+    "status": "answered",
+    "claims": [
+      {
+        "text": "张三负责的凤凰项目使用星河数据库（StarRiver DB）。",
+        "evidence_ids": [
+          "E1",
+          "E2"
+        ]
+      }
+    ],
+    "limitations": [],
+    "answer": "张三负责的凤凰项目使用星河数据库（StarRiver DB）。 [E1, E2]",
+    "retrieval": {
+      "request_id": "c0d75373-e897-4275-b833-02ef18458874",
+      "kb_id": "134b70ab-25c7-48e7-ad48-beac5adc5a5c",
+      "kb_revision": 2,
+      "mode": "hybrid",
+      "degraded": false,
+      "failed_modes": [],
+      "truncated": false,
+      "empty_reason": null,
+      "results": [
+        {
+          "evidence_id": "E1",
+          "chunk_id": "a2bfee45-5553-47e3-984e-25a49b013ed9",
+          "document_id": "593cdbc2-0649-4bdc-8caa-cdc53a535e0a",
+          "document_name": "项目职责.pdf",
+          "content_type": "text",
+          "text": "项目职责说明\n张三负责凤凰项目。凤凰项目的英文名称是 Phoenix。\n以下架构图中的编号仅存在于图片内。",
+          "locations": [
+            {
+              "bbox": [
+                60.0,
+                47.0,
+                168.0,
+                68.5999984741211
+              ],
+              "kind": "pdf",
+              "page": 1,
+              "block_id": "p0001-b0001"
+            },
+            {
+              "bbox": [
+                60.0,
+                93.0,
+                396.0,
+                107.4000015258789
+              ],
+              "kind": "pdf",
+              "page": 1,
+              "block_id": "p0001-b0002"
+            },
+            {
+              "bbox": [
+                60.0,
+                128.0,
+                264.0,
+                142.39999389648438
+              ],
+              "kind": "pdf",
+              "page": 1,
+              "block_id": "p0001-b0003"
+            }
+          ],
+          "asset_id": null,
+          "matched_by": [
+            "vector",
+            "keyword",
+            "graph"
+          ],
+          "ranks": {
+            "vector": 1,
+            "keyword": 2,
+            "graph": 1
+          },
+          "scores": {
+            "vector_similarity": 0.5779550923135832,
+            "keyword_rank": 3.0,
+            "rrf": 0.048915917503966164
+          }
+        },
+        {
+          "evidence_id": "E2",
+          "chunk_id": "a0e31cd0-37bc-44ef-9472-055ca08eb4af",
+          "document_id": "45968787-f593-4094-91b1-90defb6d747c",
+          "document_name": "数据库配置.docx",
+          "content_type": "text",
+          "text": "凤凰项目配置\n凤凰项目使用星河数据库。星河数据库的英文名称是 StarRiver DB。\n备份周期\n星河数据库每天凌晨 02:00 执行备份。\n下图为系统示意，图片描述属于派生证据。",
+          "locations": [
+            {
+              "kind": "docx",
+              "part": "word/document.xml",
+              "paragraph": 1,
+              "heading_path": [
+                "凤凰项目配置"
+              ]
+            },
+            {
+              "kind": "docx",
+              "part": "word/document.xml",
+              "paragraph": 2,
+              "heading_path": [
+                "凤凰项目配置"
+              ]
+            },
+            {
+              "row": 1,
+              "cell": 1,
+              "kind": "docx",
+              "part": "word/document.xml",
+              "paragraph": 3,
+              "table_path": [
+                1
+              ],
+              "heading_path": [
+                "凤凰项目配置"
+              ]
+            },
+            {
+              "row": 1,
+              "cell": 2,
+              "kind": "docx",
+              "part": "word/document.xml",
+              "paragraph": 4,
+              "table_path": [
+                1
+              ],
+              "heading_path": [
+                "凤凰项目配置"
+              ]
+            },
+            {
+              "kind": "docx",
+              "part": "word/document.xml",
+              "paragraph": 5,
+              "heading_path": [
+                "凤凰项目配置"
+              ]
+            }
+          ],
+          "asset_id": null,
+          "matched_by": [
+            "vector",
+            "keyword",
+            "graph"
+          ],
+          "ranks": {
+            "vector": 3,
+            "keyword": 1,
+            "graph": 2
+          },
+          "scores": {
+            "vector_similarity": 0.45795038593111204,
+            "keyword_rank": 3.4,
+            "rrf": 0.04839549075403121
+          }
+        },
+        {
+          "evidence_id": "E3",
+          "chunk_id": "7eaa3527-b0de-4116-8be6-1440eabfe2c6",
+          "document_id": "593cdbc2-0649-4bdc-8caa-cdc53a535e0a",
+          "document_name": "项目职责.pdf",
+          "content_type": "image",
+          "text": "图中有两个深蓝色边框的矩形框，左侧标有“Phoenix”，右侧标有“StarRiver DB”。一条标有“uses”的黑色箭头从左框指向右框，表示 Phoenix 使用 StarRiver DB。左框下方标有编号 RAG-42。\n图中文字：Phoenix；uses；StarRiver DB；Image-only code: RAG-42",
+          "locations": [
+            {
+              "bbox": [
+                60.0,
+                180.0,
+                540.0,
+                300.0
+              ],
+              "kind": "pdf",
+              "page": 1,
+              "block_id": "p0001-b0004"
+            }
+          ],
+          "asset_id": "img-0001",
+          "matched_by": [
+            "vector",
+            "keyword"
+          ],
+          "ranks": {
+            "vector": 2,
+            "keyword": 3
+          },
+          "scores": {
+            "vector_similarity": 0.4799318337521752,
+            "keyword_rank": 1.4,
+            "rrf": 0.03200204813108039
+          }
+        },
+        {
+          "evidence_id": "E4",
+          "chunk_id": "faef2411-9191-4505-8813-b3d6314595ee",
+          "document_id": "45968787-f593-4094-91b1-90defb6d747c",
+          "document_name": "数据库配置.docx",
+          "content_type": "image",
+          "text": "图中有两个深蓝色边框的矩形，左侧标为「Phoenix」，右侧标为「StarRiver DB」。一条标有「uses」的黑色箭头从左侧矩形指向右侧矩形，表示 Phoenix 使用 StarRiver DB。左侧矩形下方有一行代码说明。\n图中文字：Phoenix；uses；StarRiver DB；Image-only code: RAG-42",
+          "locations": [
+            {
+              "kind": "docx",
+              "part": "word/document.xml",
+              "image": "img-0001",
+              "paragraph": 6,
+              "heading_path": [
+                "凤凰项目配置"
+              ]
+            }
+          ],
+          "asset_id": "img-0001",
+          "matched_by": [
+            "vector",
+            "keyword"
+          ],
+          "ranks": {
+            "vector": 4,
+            "keyword": 4
+          },
+          "scores": {
+            "vector_similarity": 0.39519081144387724,
+            "keyword_rank": 1.4,
+            "rrf": 0.03125
+          }
+        }
+      ],
+      "supporting_results": [],
+      "graph_paths": [
+        {
+          "edges": [
+            {
+              "relation_id": "f712c573-a9ec-491d-a3b2-67fe87b52f49",
+              "source_entity_id": "023f2608-7beb-4986-b58f-251475c17e36",
+              "target_entity_id": "466642a8-b8d7-4e25-9afc-47de7ee87dbe",
+              "predicate": "负责",
+              "quote": "张三负责凤凰项目。",
+              "quote_start": 7,
+              "quote_end": 16,
+              "source": "张三",
+              "target": "凤凰项目",
+              "evidence_id": "E1"
+            },
+            {
+              "relation_id": "e29ff80f-7248-40b5-84cd-623a53b54fc7",
+              "source_entity_id": "466642a8-b8d7-4e25-9afc-47de7ee87dbe",
+              "target_entity_id": "73a7e46e-7038-42c2-abbc-3db011282292",
+              "predicate": "使用",
+              "quote": "凤凰项目使用星河数据库。",
+              "quote_start": 7,
+              "quote_end": 19,
+              "source": "凤凰项目",
+              "target": "星河数据库",
+              "evidence_id": "E2"
+            }
+          ]
+        }
+      ],
+      "warnings": []
+    }
+  },
+  {
+    "status": "answered",
+    "claims": [
+      {
+        "text": "架构图中的图片独有编号是 RAG-42。",
+        "evidence_ids": [
+          "E2",
+          "E4"
+        ]
+      }
+    ],
+    "limitations": [],
+    "answer": "架构图中的图片独有编号是 RAG-42。 [E2, E4]",
+    "retrieval": {
+      "request_id": "05edd90f-a36c-462b-8f6b-a5820fdc17f2",
+      "kb_id": "134b70ab-25c7-48e7-ad48-beac5adc5a5c",
+      "kb_revision": 2,
+      "mode": "hybrid",
+      "degraded": false,
+      "failed_modes": [],
+      "truncated": false,
+      "empty_reason": null,
+      "results": [
+        {
+          "evidence_id": "E1",
+          "chunk_id": "a2bfee45-5553-47e3-984e-25a49b013ed9",
+          "document_id": "593cdbc2-0649-4bdc-8caa-cdc53a535e0a",
+          "document_name": "项目职责.pdf",
+          "content_type": "text",
+          "text": "项目职责说明\n张三负责凤凰项目。凤凰项目的英文名称是 Phoenix。\n以下架构图中的编号仅存在于图片内。",
+          "locations": [
+            {
+              "bbox": [
+                60.0,
+                47.0,
+                168.0,
+                68.5999984741211
+              ],
+              "kind": "pdf",
+              "page": 1,
+              "block_id": "p0001-b0001"
+            },
+            {
+              "bbox": [
+                60.0,
+                93.0,
+                396.0,
+                107.4000015258789
+              ],
+              "kind": "pdf",
+              "page": 1,
+              "block_id": "p0001-b0002"
+            },
+            {
+              "bbox": [
+                60.0,
+                128.0,
+                264.0,
+                142.39999389648438
+              ],
+              "kind": "pdf",
+              "page": 1,
+              "block_id": "p0001-b0003"
+            }
+          ],
+          "asset_id": null,
+          "matched_by": [
+            "vector",
+            "keyword"
+          ],
+          "ranks": {
+            "vector": 1,
+            "keyword": 1
+          },
+          "scores": {
+            "vector_similarity": 0.4181469976902008,
+            "keyword_rank": 1.6,
+            "rrf": 0.03278688524590164
+          }
+        },
+        {
+          "evidence_id": "E2",
+          "chunk_id": "7eaa3527-b0de-4116-8be6-1440eabfe2c6",
+          "document_id": "593cdbc2-0649-4bdc-8caa-cdc53a535e0a",
+          "document_name": "项目职责.pdf",
+          "content_type": "image",
+          "text": "图中有两个深蓝色边框的矩形框，左侧标有“Phoenix”，右侧标有“StarRiver DB”。一条标有“uses”的黑色箭头从左框指向右框，表示 Phoenix 使用 StarRiver DB。左框下方标有编号 RAG-42。\n图中文字：Phoenix；uses；StarRiver DB；Image-only code: RAG-42",
+          "locations": [
+            {
+              "bbox": [
+                60.0,
+                180.0,
+                540.0,
+                300.0
+              ],
+              "kind": "pdf",
+              "page": 1,
+              "block_id": "p0001-b0004"
+            }
+          ],
+          "asset_id": "img-0001",
+          "matched_by": [
+            "vector",
+            "keyword"
+          ],
+          "ranks": {
+            "vector": 2,
+            "keyword": 2
+          },
+          "scores": {
+            "vector_similarity": 0.37300858658501057,
+            "keyword_rank": 0.4,
+            "rrf": 0.03225806451612903
+          }
+        },
+        {
+          "evidence_id": "E3",
+          "chunk_id": "a0e31cd0-37bc-44ef-9472-055ca08eb4af",
+          "document_id": "45968787-f593-4094-91b1-90defb6d747c",
+          "document_name": "数据库配置.docx",
+          "content_type": "text",
+          "text": "凤凰项目配置\n凤凰项目使用星河数据库。星河数据库的英文名称是 StarRiver DB。\n备份周期\n星河数据库每天凌晨 02:00 执行备份。\n下图为系统示意，图片描述属于派生证据。",
+          "locations": [
+            {
+              "kind": "docx",
+              "part": "word/document.xml",
+              "paragraph": 1,
+              "heading_path": [
+                "凤凰项目配置"
+              ]
+            },
+            {
+              "kind": "docx",
+              "part": "word/document.xml",
+              "paragraph": 2,
+              "heading_path": [
+                "凤凰项目配置"
+              ]
+            },
+            {
+              "row": 1,
+              "cell": 1,
+              "kind": "docx",
+              "part": "word/document.xml",
+              "paragraph": 3,
+              "table_path": [
+                1
+              ],
+              "heading_path": [
+                "凤凰项目配置"
+              ]
+            },
+            {
+              "row": 1,
+              "cell": 2,
+              "kind": "docx",
+              "part": "word/document.xml",
+              "paragraph": 4,
+              "table_path": [
+                1
+              ],
+              "heading_path": [
+                "凤凰项目配置"
+              ]
+            },
+            {
+              "kind": "docx",
+              "part": "word/document.xml",
+              "paragraph": 5,
+              "heading_path": [
+                "凤凰项目配置"
+              ]
+            }
+          ],
+          "asset_id": null,
+          "matched_by": [
+            "vector",
+            "keyword"
+          ],
+          "ranks": {
+            "vector": 4,
+            "keyword": 3
+          },
+          "scores": {
+            "vector_similarity": 0.2860090136528015,
+            "keyword_rank": 0.4,
+            "rrf": 0.03149801587301587
+          }
+        },
+        {
+          "evidence_id": "E4",
+          "chunk_id": "faef2411-9191-4505-8813-b3d6314595ee",
+          "document_id": "45968787-f593-4094-91b1-90defb6d747c",
+          "document_name": "数据库配置.docx",
+          "content_type": "image",
+          "text": "图中有两个深蓝色边框的矩形，左侧标为「Phoenix」，右侧标为「StarRiver DB」。一条标有「uses」的黑色箭头从左侧矩形指向右侧矩形，表示 Phoenix 使用 StarRiver DB。左侧矩形下方有一行代码说明。\n图中文字：Phoenix；uses；StarRiver DB；Image-only code: RAG-42",
+          "locations": [
+            {
+              "kind": "docx",
+              "part": "word/document.xml",
+              "image": "img-0001",
+              "paragraph": 6,
+              "heading_path": [
+                "凤凰项目配置"
+              ]
+            }
+          ],
+          "asset_id": "img-0001",
+          "matched_by": [
+            "vector"
+          ],
+          "ranks": {
+            "vector": 3
+          },
+          "scores": {
+            "vector_similarity": 0.35745304822921753,
+            "keyword_rank": null,
+            "rrf": 0.015873015873015872
+          }
+        }
+      ],
+      "supporting_results": [],
+      "graph_paths": [],
+      "warnings": []
+    }
+  },
+  {
+    "status": "insufficient_evidence",
+    "claims": [],
+    "limitations": [
+      "所给证据未提供张三的手机号码。"
+    ],
+    "answer": "现有证据不足以回答该问题。",
+    "retrieval": {
+      "request_id": "92114d6f-372b-40d0-a41f-88a2eb86cad5",
+      "kb_id": "134b70ab-25c7-48e7-ad48-beac5adc5a5c",
+      "kb_revision": 2,
+      "mode": "hybrid",
+      "degraded": false,
+      "failed_modes": [],
+      "truncated": false,
+      "empty_reason": null,
+      "results": [
+        {
+          "evidence_id": "E1",
+          "chunk_id": "a2bfee45-5553-47e3-984e-25a49b013ed9",
+          "document_id": "593cdbc2-0649-4bdc-8caa-cdc53a535e0a",
+          "document_name": "项目职责.pdf",
+          "content_type": "text",
+          "text": "项目职责说明\n张三负责凤凰项目。凤凰项目的英文名称是 Phoenix。\n以下架构图中的编号仅存在于图片内。",
+          "locations": [
+            {
+              "bbox": [
+                60.0,
+                47.0,
+                168.0,
+                68.5999984741211
+              ],
+              "kind": "pdf",
+              "page": 1,
+              "block_id": "p0001-b0001"
+            },
+            {
+              "bbox": [
+                60.0,
+                93.0,
+                396.0,
+                107.4000015258789
+              ],
+              "kind": "pdf",
+              "page": 1,
+              "block_id": "p0001-b0002"
+            },
+            {
+              "bbox": [
+                60.0,
+                128.0,
+                264.0,
+                142.39999389648438
+              ],
+              "kind": "pdf",
+              "page": 1,
+              "block_id": "p0001-b0003"
+            }
+          ],
+          "asset_id": null,
+          "matched_by": [
+            "vector",
+            "keyword",
+            "graph"
+          ],
+          "ranks": {
+            "vector": 1,
+            "keyword": 1,
+            "graph": 1
+          },
+          "scores": {
+            "vector_similarity": 0.45370236315117185,
+            "keyword_rank": 0.4,
+            "rrf": 0.04918032786885246
+          }
+        },
+        {
+          "evidence_id": "E2",
+          "chunk_id": "a0e31cd0-37bc-44ef-9472-055ca08eb4af",
+          "document_id": "45968787-f593-4094-91b1-90defb6d747c",
+          "document_name": "数据库配置.docx",
+          "content_type": "text",
+          "text": "凤凰项目配置\n凤凰项目使用星河数据库。星河数据库的英文名称是 StarRiver DB。\n备份周期\n星河数据库每天凌晨 02:00 执行备份。\n下图为系统示意，图片描述属于派生证据。",
+          "locations": [
+            {
+              "kind": "docx",
+              "part": "word/document.xml",
+              "paragraph": 1,
+              "heading_path": [
+                "凤凰项目配置"
+              ]
+            },
+            {
+              "kind": "docx",
+              "part": "word/document.xml",
+              "paragraph": 2,
+              "heading_path": [
+                "凤凰项目配置"
+              ]
+            },
+            {
+              "row": 1,
+              "cell": 1,
+              "kind": "docx",
+              "part": "word/document.xml",
+              "paragraph": 3,
+              "table_path": [
+                1
+              ],
+              "heading_path": [
+                "凤凰项目配置"
+              ]
+            },
+            {
+              "row": 1,
+              "cell": 2,
+              "kind": "docx",
+              "part": "word/document.xml",
+              "paragraph": 4,
+              "table_path": [
+                1
+              ],
+              "heading_path": [
+                "凤凰项目配置"
+              ]
+            },
+            {
+              "kind": "docx",
+              "part": "word/document.xml",
+              "paragraph": 5,
+              "heading_path": [
+                "凤凰项目配置"
+              ]
+            }
+          ],
+          "asset_id": null,
+          "matched_by": [
+            "vector",
+            "graph"
+          ],
+          "ranks": {
+            "vector": 4,
+            "graph": 2
+          },
+          "scores": {
+            "vector_similarity": 0.2632103405469457,
+            "keyword_rank": null,
+            "rrf": 0.031754032258064516
+          }
+        },
+        {
+          "evidence_id": "E3",
+          "chunk_id": "7eaa3527-b0de-4116-8be6-1440eabfe2c6",
+          "document_id": "593cdbc2-0649-4bdc-8caa-cdc53a535e0a",
+          "document_name": "项目职责.pdf",
+          "content_type": "image",
+          "text": "图中有两个深蓝色边框的矩形框，左侧标有“Phoenix”，右侧标有“StarRiver DB”。一条标有“uses”的黑色箭头从左框指向右框，表示 Phoenix 使用 StarRiver DB。左框下方标有编号 RAG-42。\n图中文字：Phoenix；uses；StarRiver DB；Image-only code: RAG-42",
+          "locations": [
+            {
+              "bbox": [
+                60.0,
+                180.0,
+                540.0,
+                300.0
+              ],
+              "kind": "pdf",
+              "page": 1,
+              "block_id": "p0001-b0004"
+            }
+          ],
+          "asset_id": "img-0001",
+          "matched_by": [
+            "vector"
+          ],
+          "ranks": {
+            "vector": 2
+          },
+          "scores": {
+            "vector_similarity": 0.3244866341964443,
+            "keyword_rank": null,
+            "rrf": 0.016129032258064516
+          }
+        },
+        {
+          "evidence_id": "E4",
+          "chunk_id": "faef2411-9191-4505-8813-b3d6314595ee",
+          "document_id": "45968787-f593-4094-91b1-90defb6d747c",
+          "document_name": "数据库配置.docx",
+          "content_type": "image",
+          "text": "图中有两个深蓝色边框的矩形，左侧标为「Phoenix」，右侧标为「StarRiver DB」。一条标有「uses」的黑色箭头从左侧矩形指向右侧矩形，表示 Phoenix 使用 StarRiver DB。左侧矩形下方有一行代码说明。\n图中文字：Phoenix；uses；StarRiver DB；Image-only code: RAG-42",
+          "locations": [
+            {
+              "kind": "docx",
+              "part": "word/document.xml",
+              "image": "img-0001",
+              "paragraph": 6,
+              "heading_path": [
+                "凤凰项目配置"
+              ]
+            }
+          ],
+          "asset_id": "img-0001",
+          "matched_by": [
+            "vector"
+          ],
+          "ranks": {
+            "vector": 3
+          },
+          "scores": {
+            "vector_similarity": 0.2950988236010781,
+            "keyword_rank": null,
+            "rrf": 0.015873015873015872
+          }
+        }
+      ],
+      "supporting_results": [],
+      "graph_paths": [
+        {
+          "edges": [
+            {
+              "relation_id": "f712c573-a9ec-491d-a3b2-67fe87b52f49",
+              "source_entity_id": "023f2608-7beb-4986-b58f-251475c17e36",
+              "target_entity_id": "466642a8-b8d7-4e25-9afc-47de7ee87dbe",
+              "predicate": "负责",
+              "quote": "张三负责凤凰项目。",
+              "quote_start": 7,
+              "quote_end": 16,
+              "source": "张三",
+              "target": "凤凰项目",
+              "evidence_id": "E1"
+            }
+          ]
+        },
+        {
+          "edges": [
+            {
+              "relation_id": "f712c573-a9ec-491d-a3b2-67fe87b52f49",
+              "source_entity_id": "023f2608-7beb-4986-b58f-251475c17e36",
+              "target_entity_id": "466642a8-b8d7-4e25-9afc-47de7ee87dbe",
+              "predicate": "负责",
+              "quote": "张三负责凤凰项目。",
+              "quote_start": 7,
+              "quote_end": 16,
+              "source": "张三",
+              "target": "凤凰项目",
+              "evidence_id": "E1"
+            },
+            {
+              "relation_id": "e29ff80f-7248-40b5-84cd-623a53b54fc7",
+              "source_entity_id": "466642a8-b8d7-4e25-9afc-47de7ee87dbe",
+              "target_entity_id": "73a7e46e-7038-42c2-abbc-3db011282292",
+              "predicate": "使用",
+              "quote": "凤凰项目使用星河数据库。",
+              "quote_start": 7,
+              "quote_end": 19,
+              "source": "凤凰项目",
+              "target": "星河数据库",
+              "evidence_id": "E2"
+            }
+          ]
+        }
+      ],
+      "warnings": []
+    }
+  }
+]
