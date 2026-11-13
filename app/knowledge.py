@@ -1,175 +1,170 @@
-import hashlib
-import io
-import shutil
-import zipfile
-from pathlib import Path
+"""Knowledge-base creation, local mounts and logical document lifecycle."""
 from uuid import uuid4
 
-from psycopg.types.json import Jsonb
-
-from app.config import MAX_UPLOAD, PIPELINE_VERSION
-from app.db import get_kb
-from app.embeddings import DIMENSION, INPUT_TEMPLATE, QUERY_INSTRUCTION
 from app.errors import AppError
+from app.indexing import bundle
+from app.schemas import Manifest
+from app.storage import (
+    atomic_json,
+    commit,
+    entry_path,
+    finish_read,
+    inside,
+    lock,
+    manifest,
+    mounted,
+    operation,
+    page,
+    registry,
+    registry_write,
+    writing,
+)
+
+ACTIVE = {'queued', 'parsing', 'awaiting_enrichment', 'ready_to_publish', 'failed'}
 
 
-def profile(settings):
-    return {"model": settings.embedding_model, "revision": settings.embedding_revision,
-            "dimension": DIMENSION, "normalize": True, "query_instruction": QUERY_INSTRUCTION,
-            "input_template": INPUT_TEMPLATE}
+def busy(value):
+    return any(t['state'] in ACTIVE for t in value['tasks'].values())
 
 
-def create_kb(db, settings, request):
-    with db.connect() as conn:
-        return conn.execute("""INSERT INTO knowledge_bases(id,name,description,embedding_profile)
-            VALUES (%s,%s,%s,%s) RETURNING *""",
-            (uuid4(), request.name, request.description, Jsonb(profile(settings)))).fetchone()
+def create_knowledge_base(settings, path, name, description, operation_id):
+    root = entry_path(settings, path)
+    if not name.strip():
+        raise AppError('INVALID_ARGUMENT', '知识库名称不能为空')
+    params = {'path': str(root), 'name': name, 'description': description}
+    with registry_write(settings) as reg:
+        root.mkdir(parents=True, exist_ok=True)
+        if not (root / 'manifest.json').exists() and any(p.name != '.write.lock' for p in root.iterdir()):
+            raise AppError('OPERATION_CONFLICT', '建库仅允许新目录或空目录')
+        with lock(inside(root, '.write.lock')):
+            if (root / 'manifest.json').exists():
+                value = manifest(root)
+                previous, _ = operation(value, operation_id, 'create', params)
+                if not previous:
+                    raise AppError('OPERATION_CONFLICT', '该目录已有知识库')
+            else:
+                value = Manifest(kb_id=uuid4().hex, name=name, description=description).model_dump()
+                _, fp = operation(value, operation_id, 'create', params)
+                value['operations'][operation_id] = {'kind': 'create', 'fingerprint': fp,
+                                                     'result': {'kb_id': value['kb_id']}}
+                inside(root, 'documents').mkdir()
+                inside(root, '.work').mkdir()
+                atomic_json(inside(root, 'manifest.json'), value, Manifest)
+            old = reg['mounts'].get(value['kb_id'])
+            if old and old['path'] != str(root):
+                raise AppError('KB_ID_CONFLICT', '同一 kb_id 已挂载其他路径')
+            reg['mounts'][value['kb_id']] = {'path': str(root), 'access': 'read_write'}
+    return {'kb_id': value['kb_id'], 'kb_revision': value['kb_revision'], 'access': 'read_write'}
 
 
-def list_kbs(db, limit=20, offset=0):
-    with db.connect() as conn:
-        total = conn.execute("SELECT count(*) AS n FROM knowledge_bases").fetchone()['n']
-        rows = conn.execute("""SELECT k.*, (SELECT count(*) FROM documents d
-            WHERE d.kb_id=k.id AND d.status='ready') AS ready_document_count
-            FROM knowledge_bases k ORDER BY k.created_at,k.id LIMIT %s OFFSET %s""",
-            (limit, offset)).fetchall()
-    return {"items": rows, "total": total}
+def mount_knowledge_base(settings, path, access='read_only', replace=False):
+    if access not in ('read_only', 'read_write'):
+        raise AppError('INVALID_ARGUMENT', 'access 无效')
+    root = entry_path(settings, path)
+    value = manifest(root)
+    # A read-only mount never creates a lock or cache inside the package.
+    for doc in value['documents'].values():
+        bundle(root, doc)
+    with registry_write(settings) as reg:
+        old = reg['mounts'].get(value['kb_id'])
+        if old and old['path'] != str(root) and not replace:
+            raise AppError('KB_ID_CONFLICT', '同一 kb_id 已在另一目录挂载；需显式 replace')
+        promoting = old and old['path'] == str(root) and old['access'] == 'read_only' and access == 'read_write'
+        if old and old != {'path': str(root), 'access': access} and not promoting:
+            try:
+                old_value = manifest(entry_path(settings, old['path']))
+            except AppError as exc:
+                if exc.code != 'KB_OFFLINE':
+                    raise
+            else:
+                if busy(old_value):
+                    raise AppError('KB_BUSY', '先发布或取消现有任务，再切换挂载')
+        finish_read(root, value)
+        reg['mounts'][value['kb_id']] = {'path': str(root), 'access': access}
+    return {'kb_id': value['kb_id'], 'kb_revision': value['kb_revision'], 'access': access,
+            'documents': len(value['documents']),
+            'coverage': {key: sum(d['coverage'].get(key, 0) for d in value['documents'].values())
+                         for key in ('images_total', 'images_processed', 'unreadable', 'decorative')}}
 
 
-def document(conn, kb_id, doc_id, lock=False):
-    row = conn.execute("SELECT * FROM documents WHERE kb_id=%s AND id=%s" +
-                       (" FOR UPDATE" if lock else ""), (kb_id, doc_id)).fetchone()
-    if not row:
-        raise AppError("DOCUMENT_NOT_FOUND", "文档不存在", 404)
-    return row
-
-
-def public_document(row):
-    return {k: v for k, v in row.items() if k not in {"source_path", "asset_manifest", "processing_meta"}}
-
-
-def validate_upload(filename, content):
-    if not content:
-        raise AppError("INVALID_ARGUMENT", "文件不能为空", 422)
-    if len(content) > MAX_UPLOAD:
-        raise AppError("FILE_TOO_LARGE", "单文件不得超过 20 MiB", 413)
-    suffix = Path(filename).suffix.lower()
-    if suffix == ".pdf" and content.startswith(b"%PDF-"):
-        return "pdf"
-    if suffix == ".docx" and content.startswith(b"PK"):
+def unmount_knowledge_base(settings, kb_id):
+    with registry_write(settings) as reg:
+        mount = reg['mounts'].get(kb_id)
+        if not mount:
+            raise AppError('KB_NOT_FOUND', '知识库未挂载')
+        root = entry_path(settings, mount['path'])
         try:
-            with zipfile.ZipFile(io.BytesIO(content)) as archive:
-                entries = archive.infolist()
-                if len(entries) > 5000 or sum(e.file_size for e in entries) > 100 * 1024 * 1024:
-                    raise AppError("FILE_TOO_LARGE", "DOCX 解压量超过限制", 413)
-                if not {"word/document.xml", "[Content_Types].xml"}.issubset(archive.namelist()):
-                    raise ValueError("Missing document parts")
-            return "docx"
-        except (zipfile.BadZipFile, ValueError) as exc:
-            raise AppError("UNSUPPORTED_FILE_TYPE", "DOCX 内容无效", 415) from exc
-    raise AppError("UNSUPPORTED_FILE_TYPE", "仅支持有效的 PDF / DOCX 文件", 415)
+            value = manifest(root)
+        except AppError as exc:
+            if exc.code != 'KB_OFFLINE':
+                raise
+        else:
+            if busy(value):
+                raise AppError('KB_BUSY', '先发布或取消现有任务')
+        del reg['mounts'][kb_id]
+    return {'kb_id': kb_id, 'unmounted': True}
 
 
-def upload_document(db, settings, kb_id, filename, content):
-    media_type = validate_upload(filename, content)
-    digest = hashlib.sha256(content).hexdigest()
-    doc_id = uuid4()
-    folder = settings.data_dir / "documents" / str(doc_id)
-    committed = False
-    try:
-        folder.mkdir(parents=True)
-        source = folder / f"source.{media_type}"
-        source.write_bytes(content)
-        with db.connect() as conn:
-            get_kb(conn, kb_id, lock=True)
-            old = conn.execute("SELECT * FROM documents WHERE kb_id=%s AND sha256=%s",
-                               (kb_id, digest)).fetchone()
-            if old:
-                return {"document": public_document(old), "deduplicated": True}
-            row = conn.execute("""INSERT INTO documents
-                (id,kb_id,filename,media_type,sha256,size_bytes,source_path,pipeline_version)
-                VALUES (%s,%s,%s,%s,%s,%s,%s,%s) RETURNING *""",
-                (doc_id, kb_id, filename.replace('\\', '/').split('/')[-1][:255], media_type,
-                 digest, len(content), source.relative_to(settings.data_dir).as_posix(), PIPELINE_VERSION)
-                ).fetchone()
-        committed = True
-        return {"document": public_document(row), "deduplicated": False}
-    finally:
-        if not committed:
-            cleanup_files(settings, [doc_id])
-
-
-def list_documents(db, kb_id, limit=20, offset=0):
-    with db.connect() as conn:
-        get_kb(conn, kb_id)
-        total = conn.execute("SELECT count(*) AS n FROM documents WHERE kb_id=%s", (kb_id,)).fetchone()['n']
-        rows = conn.execute("SELECT * FROM documents WHERE kb_id=%s ORDER BY created_at,id LIMIT %s OFFSET %s",
-                            (kb_id, limit, offset)).fetchall()
-    return {"items": [public_document(r) for r in rows], "total": total}
-
-
-def retry_document(db, kb_id, doc_id):
-    with db.connect() as conn:
-        get_kb(conn, kb_id, lock=True)
-        row = document(conn, kb_id, doc_id, lock=True)
-        if row['status'] != 'failed':
-            raise AppError("DOCUMENT_NOT_RETRYABLE", "仅失败文档可重试", 409)
-        row = conn.execute("""UPDATE documents SET status='queued',attempt=attempt+1,stage=NULL,
-            progress=0,error_code=NULL,error_message=NULL,updated_at=now()
-            WHERE id=%s RETURNING *""", (doc_id,)).fetchone()
-    return public_document(row)
-
-
-def cleanup_files(settings, doc_ids):
-    import logging
-
-    root = (settings.data_dir / "documents").resolve()
-    for doc_id in doc_ids:
-        folder = (root / str(doc_id)).resolve()
-        if folder.parent != root:
-            raise ValueError("Unsafe cleanup path")
+def list_knowledge_bases(settings, cursor=None, limit=20):
+    reg = registry(settings)
+    items = []
+    revisions = []
+    for kb_id, mount in sorted(reg['mounts'].items()):
+        item = {'kb_id': kb_id, **mount}
         try:
-            if folder.exists():
-                shutil.rmtree(folder)
-        except OSError:
-            logging.getLogger(__name__).warning("cleanup_pending document_id=%s", doc_id)
+            _, value = mounted(settings, kb_id)
+            item.update(name=value['name'], description=value['description'],
+                        kb_revision=value['kb_revision'], available=True)
+            revisions.append([kb_id, value['kb_revision']])
+        except AppError as exc:
+            item.update(available=False, error=exc.payload()['error'])
+            revisions.append([kb_id, exc.code])
+        items.append(item)
+    result = page(items, 'mounts', [reg['revision'], revisions], cursor, limit)
+    if registry(settings)['revision'] != reg['revision']:
+        raise AppError('STALE_REVISION', '挂载清单已变化')
+    return result
 
 
-def delete_document(db, settings, kb_id, doc_id):
-    with db.connect() as conn:
-        if not conn.execute("SELECT id FROM knowledge_bases WHERE id=%s FOR UPDATE", (kb_id,)).fetchone():
-            return
-        deleted = conn.execute("DELETE FROM documents WHERE kb_id=%s AND id=%s RETURNING id",
-                               (kb_id, doc_id)).fetchone()
-        if not deleted:
-            return
-        conn.execute("""DELETE FROM entities e WHERE kb_id=%s AND NOT EXISTS
-            (SELECT 1 FROM relations r WHERE r.kb_id=e.kb_id
-             AND (r.source_entity_id=e.id OR r.target_entity_id=e.id))""", (kb_id,))
-        conn.execute("UPDATE knowledge_bases SET revision=revision+1 WHERE id=%s", (kb_id,))
-    cleanup_files(settings, [doc_id])
+def list_documents(settings, kb_id, cursor=None, limit=20, expected_kb_revision=None):
+    from app.storage import check_revision
+    root, value = mounted(settings, kb_id)
+    check_revision(value, expected_kb_revision)
+    entries = []
+    for doc in value['documents'].values():
+        entry = {k: v for k, v in doc.items() if k not in ('hashes', 'path')}
+        try:
+            bundle(root, doc)
+            entry['index_valid'] = True
+        except AppError as exc:
+            entry.update(index_valid=False, error=exc.payload()['error'])
+        entry['tasks'] = [{'task_id': k, **t} for k, t in value['tasks'].items()
+                          if t['doc_id'] == doc['doc_id'] and t['state'] in ACTIVE][:20]
+        entry['tasks_truncated'] = sum(t['doc_id'] == doc['doc_id'] and t['state'] in ACTIVE
+                                       for t in value['tasks'].values()) > 20
+        entries.append(entry)
+    result = page(entries, f'{kb_id}:documents', value['kb_revision'], cursor, limit)
+    finish_read(root, value)
+    return {'kb_id': kb_id, 'kb_revision': value['kb_revision'], **result}
 
 
-def delete_kb(db, settings, kb_id):
-    with db.connect() as conn:
-        if not conn.execute("SELECT id FROM knowledge_bases WHERE id=%s FOR UPDATE", (kb_id,)).fetchone():
-            return
-        ids = [r['id'] for r in conn.execute("SELECT id FROM documents WHERE kb_id=%s", (kb_id,))]
-        conn.execute("DELETE FROM knowledge_bases WHERE id=%s", (kb_id,))
-    cleanup_files(settings, ids)
-
-
-def file_path(db, settings, kb_id, doc_id, asset_id=None):
-    with db.connect() as conn:
-        row = document(conn, kb_id, doc_id)
-        relative = row['source_path']
-        if asset_id:
-            asset = row['asset_manifest'].get(asset_id)
-            if not asset or row['status'] != 'ready':
-                raise AppError("ASSET_NOT_FOUND", "图片不存在", 404)
-            relative = asset['path']
-    path = (settings.data_dir / relative).resolve()
-    expected = (settings.data_dir / "documents" / str(doc_id)).resolve()
-    if not path.is_relative_to(expected) or not path.is_file():
-        raise AppError("ASSET_NOT_FOUND", "文件不存在", 404)
-    return path, row['filename']
+def delete_document(settings, kb_id, doc_id, expected_doc_revision, operation_id):
+    with writing(settings, kb_id) as (root, value):
+        previous, fp = operation(value, operation_id, 'delete', [doc_id, expected_doc_revision])
+        if previous:
+            return previous['result']
+        doc = value['documents'].get(doc_id)
+        if not doc:
+            raise AppError('DOCUMENT_NOT_FOUND', '文档不存在或不属于该库')
+        if doc['doc_revision'] != expected_doc_revision:
+            raise AppError('STALE_REVISION', '文档版本已变化')
+        del value['documents'][doc_id]
+        value['deleted'][doc_id] = expected_doc_revision
+        for task in value['tasks'].values():
+            if task['doc_id'] == doc_id and task['state'] != 'published':
+                task['state'] = 'cancelled'
+        result = {'kb_id': kb_id, 'doc_id': doc_id, 'deleted': True, 'kb_revision': value['kb_revision'] + 1}
+        value['operations'][operation_id] = {'kind': 'delete', 'fingerprint': fp, 'result': result}
+        commit(root, value)
+    # Deliberately retain unreferenced files. No physical delete tool in V2.0.
+    return result

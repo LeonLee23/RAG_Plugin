@@ -15,3 +15,7 @@ build/
 .agents/
 .claude/
 .mcp.json
+
+# Local V2 state and project registration (never package user knowledge in Git)
+.ragplugin/
+.codex/config.toml

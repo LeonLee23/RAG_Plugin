@@ -1,0 +1,6 @@
+{
+  "name": "ragplugin",
+  "version": "2.0.0",
+  "description": "Portable local knowledge bases with host-driven reasoning and evidence citations",
+  "mcpServers": "./mcp.claude.json"
+}

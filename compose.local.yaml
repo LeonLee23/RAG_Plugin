@@ -1,4 +1,0 @@
-# Optional override: expose only the database for local Python development.
-services:
-  db:
-    ports: ['127.0.0.1:55433:5432']

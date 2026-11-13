@@ -1,4 +1,5 @@
 import re
+import zipfile
 
 from docx import Document
 from lxml import etree
@@ -26,6 +27,10 @@ def owner_paragraph(element):
 def parse_docx(path, output_dir):
     blocks, assets = [], {}
     try:
+        with zipfile.ZipFile(path) as archive:
+            entries = archive.infolist()
+            if len(entries) > 5000 or sum(e.file_size for e in entries) > 100 * 1024 * 1024:
+                raise AppError('DOCUMENT_LIMIT', 'DOCX 解压大小或条目数超限')
         doc = Document(path)
         parts = [p for p in doc.part.package.parts
                  if re.fullmatch(r'/word/(document|header\d+|footer\d+|footnotes|endnotes)\.xml', str(p.partname))]
@@ -55,19 +60,22 @@ def parse_docx(path, output_dir):
                             loc[field] = list(parent.getparent().iterchildren(tag('w', name))).index(parent)+1
                 block_id = f"{loc['part']}:p{idx}"
                 if text:
-                    blocks.append(Block(block_id, 'text', text, loc, list(heading)))
+                    blocks.append(Block(block_id, 'text', text, loc, list(heading),
+                                        heading_level=int(match[1]) if match else None))
                 for node in paragraph.iter():
                     if owner_paragraph(node) is not paragraph:
                         continue
                     relationship = None
                     if node.tag == tag('a', 'blip'):
+                        if node.get(tag('r', 'link')):
+                            raise AppError('FORMAT_UNSUPPORTED', 'DOCX 外链图片须先嵌入文件')
                         relationship = node.get(tag('r', 'embed'))
                     elif node.tag == tag('v', 'imagedata'):
                         relationship = node.get(tag('r', 'id'))
                     if not relationship:
                         continue
                     if len(assets) >= MAX_IMAGES:
-                        raise AppError("DOCUMENT_LIMIT", "文档图片超过 100 张", 422)
+                        raise AppError("DOCUMENT_LIMIT", "文档图片超过 100 张")
                     image_part = part.related_parts[relationship]
                     asset_id = f"img-{len(assets)+1:04d}"
                     target = save_image(image_part.blob, output_dir, asset_id)
@@ -78,7 +86,7 @@ def parse_docx(path, output_dir):
     except AppError:
         raise
     except Exception as exc:
-        raise AppError("PARSE_FAILED", "DOCX 解析失败或包含不支持的图片", 422) from exc
+        raise AppError("PARSE_FAILED", "DOCX 解析失败或包含不支持的图片") from exc
     if not blocks:
-        raise AppError("NO_EXTRACTABLE_TEXT", "文档没有可处理内容", 422)
+        raise AppError("NO_EXTRACTABLE_TEXT", "文档没有可处理内容")
     return blocks, assets

@@ -1,1 +1,1 @@
-"""Independent recall methods and evidence-preserving fusion."""
+"""Deterministic retrieval and version-bound evidence."""

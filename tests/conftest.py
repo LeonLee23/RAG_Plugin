@@ -1,65 +1,37 @@
-import os
-import threading
-from uuid import uuid4
-
-import numpy as np
 import pytest
-from psycopg.conninfo import conninfo_to_dict
 
+from app import ingestion, knowledge
 from app.config import Settings
-from app.db import Database
 
 
-class FakeEncoder:
-    """Deterministic test fixture only; production never imports this module."""
-    def load(self):
-        pass
-
-    def token_count(self, text):
-        return len(text)+2
-
-    def encode(self, texts, kind='document'):
-        vectors = np.zeros((len(texts), 512), dtype=np.float32)
-        vectors[:, 0] = 1
-        return vectors
+def pytest_addoption(parser):
+    parser.addoption('--live-model', action='store_true', help='Explicitly enable real host probes')
 
 
-class FakeAgent:
-    def __init__(self):
-        self.stop = threading.Event()
-        self.last_error = None
-        self.last_provider = None
+def pytest_collection_modifyitems(config, items):
+    if not config.getoption('--live-model'):
+        for item in items:
+            if 'live_model' in item.keywords:
+                item.add_marker(pytest.mark.skip(reason='Requires explicit --live-model'))
 
 
 @pytest.fixture
-def encoder():
-    return FakeEncoder()
+def settings(tmp_path):
+    return Settings(tmp_path / 'registry', (tmp_path,))
 
 
 @pytest.fixture
-def db():
-    url = os.getenv('TEST_DATABASE_URL')
-    if not url:
-        pytest.skip('Set TEST_DATABASE_URL for real PostgreSQL integration tests')
-    name = conninfo_to_dict(url).get('dbname', '')
-    if not name.endswith('_test'):
-        pytest.fail('Refusing to run integration tests outside a *_test database')
-    database = Database(url)
-    database.migrate()
-    # Each test owns a unique KB; never truncate another process's tables.
-    yield database
+def kb(settings, tmp_path):
+    return knowledge.create_knowledge_base(settings, str(tmp_path / 'kb'), '测试库', '', 'create')['kb_id']
 
 
-@pytest.fixture
-def settings(db, tmp_path):
-    return Settings(database_url=db.url, data_dir=tmp_path, _env_file=None)
+def ingest(settings, kb, path, operation='import', **kwargs):
+    task = ingestion.import_document(settings, kb, str(path), operation, **kwargs)
+    if task['state'] == 'queued':
+        ingestion.run_task(settings, kb, task['task_id'])
+        task = ingestion.get_ingestion_task(settings, kb, task['task_id'])
+    return task
 
 
-@pytest.fixture
-def kb(db, settings):
-    from app.knowledge import create_kb, delete_kb
-    from app.schemas import KnowledgeBaseCreate
-
-    row = create_kb(db, settings, KnowledgeBaseCreate(name='test-'+str(uuid4())))
-    yield row
-    delete_kb(db, settings, row['id'])
+def publish(settings, kb, task):
+    return ingestion.publish_document(settings, kb, task['task_id'], task['attempt'], task['expected_doc_revision'])

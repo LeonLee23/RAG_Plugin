@@ -1,0 +1,9 @@
+{
+  "mcpServers": {
+    "ragplugin": {
+      "type": "stdio",
+      "command": "uv",
+      "args": ["--directory", "${PLUGIN_ROOT}", "run", "--no-sync", "--frozen", "python", "-m", "app.main"]
+    }
+  }
+}

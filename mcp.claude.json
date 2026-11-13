@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "ragplugin": {
+      "command": "uv",
+      "args": ["--directory", "${CLAUDE_PLUGIN_ROOT}", "run", "--no-sync", "--frozen", "python", "-m", "app.main"]
+    }
+  }
+}

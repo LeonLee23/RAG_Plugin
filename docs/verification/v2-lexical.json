@@ -1,0 +1,247 @@
+{
+  "version": "V2",
+  "method": "lexical_candidates_then_full_selected_nodes",
+  "host_tree_reasoning": "not_measured",
+  "results": [
+    {
+      "id": "keyword-001",
+      "category": "keyword",
+      "candidates": 5,
+      "total_candidates": 5,
+      "truncated": false,
+      "evidence_group_coverage": 1.0,
+      "seconds": 1.0140141998417675,
+      "answer_quality": "not_measured"
+    },
+    {
+      "id": "keyword-002",
+      "category": "keyword",
+      "candidates": 5,
+      "total_candidates": 5,
+      "truncated": false,
+      "evidence_group_coverage": 1.0,
+      "seconds": 0.5942647000774741,
+      "answer_quality": "not_measured"
+    },
+    {
+      "id": "keyword-003",
+      "category": "keyword",
+      "candidates": 3,
+      "total_candidates": 3,
+      "truncated": false,
+      "evidence_group_coverage": 1.0,
+      "seconds": 0.4892655999865383,
+      "answer_quality": "not_measured"
+    },
+    {
+      "id": "keyword-004",
+      "category": "keyword",
+      "candidates": 3,
+      "total_candidates": 3,
+      "truncated": false,
+      "evidence_group_coverage": 1.0,
+      "seconds": 0.4466034001670778,
+      "answer_quality": "not_measured"
+    },
+    {
+      "id": "keyword-005",
+      "category": "keyword",
+      "candidates": 5,
+      "total_candidates": 5,
+      "truncated": false,
+      "evidence_group_coverage": 1.0,
+      "seconds": 0.6617828998714685,
+      "answer_quality": "not_measured"
+    },
+    {
+      "id": "keyword-006",
+      "category": "keyword",
+      "candidates": 3,
+      "total_candidates": 3,
+      "truncated": false,
+      "evidence_group_coverage": 1.0,
+      "seconds": 0.5106143997982144,
+      "answer_quality": "not_measured"
+    },
+    {
+      "id": "semantic-001",
+      "category": "semantic",
+      "candidates": 5,
+      "total_candidates": 5,
+      "truncated": false,
+      "evidence_group_coverage": 1.0,
+      "seconds": 0.6539046000689268,
+      "answer_quality": "not_measured"
+    },
+    {
+      "id": "semantic-002",
+      "category": "semantic",
+      "candidates": 5,
+      "total_candidates": 5,
+      "truncated": false,
+      "evidence_group_coverage": 1.0,
+      "seconds": 0.6590178001206368,
+      "answer_quality": "not_measured"
+    },
+    {
+      "id": "semantic-003",
+      "category": "semantic",
+      "candidates": 5,
+      "total_candidates": 5,
+      "truncated": false,
+      "evidence_group_coverage": 1.0,
+      "seconds": 0.6825581998564303,
+      "answer_quality": "not_measured"
+    },
+    {
+      "id": "semantic-004",
+      "category": "semantic",
+      "candidates": 3,
+      "total_candidates": 3,
+      "truncated": false,
+      "evidence_group_coverage": 1.0,
+      "seconds": 0.4567992000374943,
+      "answer_quality": "not_measured"
+    },
+    {
+      "id": "semantic-005",
+      "category": "semantic",
+      "candidates": 5,
+      "total_candidates": 5,
+      "truncated": false,
+      "evidence_group_coverage": 1.0,
+      "seconds": 0.6794759999029338,
+      "answer_quality": "not_measured"
+    },
+    {
+      "id": "semantic-006",
+      "category": "semantic",
+      "candidates": 5,
+      "total_candidates": 5,
+      "truncated": false,
+      "evidence_group_coverage": 1.0,
+      "seconds": 0.6764092999510467,
+      "answer_quality": "not_measured"
+    },
+    {
+      "id": "graph-001",
+      "category": "graph",
+      "candidates": 5,
+      "total_candidates": 6,
+      "truncated": true,
+      "evidence_group_coverage": 1.0,
+      "seconds": 0.6169690999668092,
+      "answer_quality": "not_measured"
+    },
+    {
+      "id": "graph-002",
+      "category": "graph",
+      "candidates": 5,
+      "total_candidates": 6,
+      "truncated": true,
+      "evidence_group_coverage": 1.0,
+      "seconds": 0.6685884001199156,
+      "answer_quality": "not_measured"
+    },
+    {
+      "id": "graph-003",
+      "category": "graph",
+      "candidates": 5,
+      "total_candidates": 6,
+      "truncated": true,
+      "evidence_group_coverage": 1.0,
+      "seconds": 0.6263242999557406,
+      "answer_quality": "not_measured"
+    },
+    {
+      "id": "graph-004",
+      "category": "graph",
+      "candidates": 5,
+      "total_candidates": 5,
+      "truncated": false,
+      "evidence_group_coverage": 1.0,
+      "seconds": 0.6537957000546157,
+      "answer_quality": "not_measured"
+    },
+    {
+      "id": "image-001",
+      "category": "image",
+      "candidates": 4,
+      "total_candidates": 4,
+      "truncated": false,
+      "evidence_group_coverage": 1.0,
+      "seconds": 0.599463599966839,
+      "answer_quality": "not_measured"
+    },
+    {
+      "id": "image-002",
+      "category": "image",
+      "candidates": 2,
+      "total_candidates": 2,
+      "truncated": false,
+      "evidence_group_coverage": 1.0,
+      "seconds": 0.40231409994885325,
+      "answer_quality": "not_measured"
+    },
+    {
+      "id": "image-003",
+      "category": "image",
+      "candidates": 2,
+      "total_candidates": 2,
+      "truncated": false,
+      "evidence_group_coverage": 1.0,
+      "seconds": 0.4045341000892222,
+      "answer_quality": "not_measured"
+    },
+    {
+      "id": "image-004",
+      "category": "image",
+      "candidates": 0,
+      "total_candidates": 0,
+      "truncated": false,
+      "evidence_group_coverage": 0.0,
+      "seconds": 0.19998000003397465,
+      "answer_quality": "not_measured"
+    },
+    {
+      "id": "unanswerable-001",
+      "category": "unanswerable",
+      "candidates": 2,
+      "total_candidates": 2,
+      "truncated": false,
+      "evidence_group_coverage": null,
+      "seconds": 0.41505259997211397,
+      "answer_quality": "not_measured"
+    },
+    {
+      "id": "unanswerable-002",
+      "category": "unanswerable",
+      "candidates": 5,
+      "total_candidates": 5,
+      "truncated": false,
+      "evidence_group_coverage": null,
+      "seconds": 0.7243633000180125,
+      "answer_quality": "not_measured"
+    },
+    {
+      "id": "unanswerable-003",
+      "category": "unanswerable",
+      "candidates": 3,
+      "total_candidates": 3,
+      "truncated": false,
+      "evidence_group_coverage": null,
+      "seconds": 0.5177591999527067,
+      "answer_quality": "not_measured"
+    },
+    {
+      "id": "unanswerable-004",
+      "category": "unanswerable",
+      "candidates": 5,
+      "total_candidates": 5,
+      "truncated": false,
+      "evidence_group_coverage": null,
+      "seconds": 0.6105223000049591,
+      "answer_quality": "not_measured"
+    }
+  ]
+}
